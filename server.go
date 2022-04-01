@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Welcome to the Orders App!")
+	fmt.Println("Welcome to the Betting App!")
 	handler, err := handlers.New()
 	if err != nil {
 		log.Fatal(err)

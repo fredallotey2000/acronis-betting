@@ -11,7 +11,7 @@ type EventsDB struct {
 	events sync.Map
 }
 
-// NewProducts creates a new empty product DB
+// NewEvent creates a new empty event DB
 func NewEvent() (*EventsDB, error) {
 	p := &EventsDB{}
 	return p, nil
@@ -20,7 +20,7 @@ func NewEvent() (*EventsDB, error) {
 // Exists checks whether an event with a give id exists
 func (p *EventsDB) Exists(id string) error {
 	if _, ok := p.events.Load(id); !ok {
-		return fmt.Errorf("no product found for id %s", id)
+		return fmt.Errorf("no event found for id %s", id)
 	}
 	return nil
 }
@@ -35,23 +35,23 @@ func (p *EventsDB) Find(id string) (models.Event, error) {
 	return toEvent(pp), nil
 }
 
-// Upsert creates or updates an event in the orders DB
+// Upsert creates or updates an event in the events DB
 func (p *EventsDB) Upsert(event models.Event) {
 	p.events.Store(event.Id, event)
 }
 
 // FindAll returns all  event in the system
 func (p *EventsDB) FindAll() []models.Event {
-	var allProducts []models.Event
+	var allEvents []models.Event
 	p.events.Range(func(_, value interface{}) bool {
-		allProducts = append(allProducts, toEvent(value))
+		allEvents = append(allEvents, toEvent(value))
 		return true
 	})
 
-	// sort.Slice(allProducts, func(i, j int) bool {
-	// 	return allProducts[i].Id < allProducts[j].Id
+	// sort.Slice(allEvents, func(i, j int) bool {
+	// 	return allEvents[i].Id < allEvents[j].Id
 	// })
-	return allProducts
+	return allEvents
 }
 
 // toEvent attempts to convert an interface to an event

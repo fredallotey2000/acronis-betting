@@ -140,7 +140,7 @@ func (r *service) processIncomingBets() {
 	}
 }
 
-// processOrder is an internal method which completes or rejects an order
+// process bets does not add to db if the event is closed
 func (r *service) processBet(bet models.Bet) {
 	// check if the event is not closed
 	event, err := r.events.Find(bet.EventId)

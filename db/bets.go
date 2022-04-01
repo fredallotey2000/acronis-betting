@@ -20,7 +20,7 @@ func NewBet() *BetsDB {
 func (o *BetsDB) Find(id string) (models.Bet, error) {
 	po, ok := o.placedBets.Load(id)
 	if !ok {
-		return models.Bet{}, fmt.Errorf("no order found for %s order id", id)
+		return models.Bet{}, fmt.Errorf("no bet found for %s bet id", id)
 	}
 
 	return toBet(po), nil
@@ -31,7 +31,7 @@ func (o *BetsDB) Upsert(bet models.Bet) {
 	o.placedBets.Store(bet.Id, bet)
 }
 
-// toOrder attempts to convert an interface to a bet
+// toBet attempts to convert an interface to a bet
 // panics if this not possible
 func toBet(po interface{}) models.Bet {
 	bet, ok := po.(models.Bet)
@@ -41,7 +41,7 @@ func toBet(po interface{}) models.Bet {
 	return bet
 }
 
-// FindAll returns all  event in the system
+// FindAll returns all  bets in the system
 func (p *BetsDB) FindAll() []models.Bet {
 	var allBets []models.Bet
 	p.placedBets.Range(func(_, value interface{}) bool {

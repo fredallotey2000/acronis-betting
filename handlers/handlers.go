@@ -41,15 +41,15 @@ func New() (Handler, error) {
 // Index returns a simple welcome response for the homepage
 func (h *handler) Index(w http.ResponseWriter, r *http.Request) {
 	// Send an HTTP status & a hardcoded message
-	writeResponse(w, http.StatusOK, "Welcome to the Orders App!", nil)
+	writeResponse(w, http.StatusOK, "Welcome to the betting App!", nil)
 }
 
-// OrderInsert creates a new order with the given parameters
+// AddEvent creates a new event with the given parameters
 func (h *handler) AddEvent(w http.ResponseWriter, r *http.Request) {
 	var event models.Event
 	// Read the request body
 	if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
-		writeResponse(w, http.StatusBadRequest, nil, fmt.Errorf("invalid order body:%v", err))
+		writeResponse(w, http.StatusBadRequest, nil, fmt.Errorf("invalid event body:%v", err))
 		return
 	}
 	event_, err := h.service.NewEvent(event)
@@ -60,12 +60,12 @@ func (h *handler) AddEvent(w http.ResponseWriter, r *http.Request) {
 	writeResponse(w, http.StatusOK, event_, nil)
 }
 
-// OrderInsert creates a new order with the given parameters
+// AddBet creates a new bet with the given parameters
 func (h *handler) AddBet(w http.ResponseWriter, r *http.Request) {
 	var bet models.Bet
 	// Read the request body
 	if err := json.NewDecoder(r.Body).Decode(&bet); err != nil {
-		writeResponse(w, http.StatusBadRequest, nil, fmt.Errorf("invalid order body:%v", err))
+		writeResponse(w, http.StatusBadRequest, nil, fmt.Errorf("invalid bet body:%v", err))
 		return
 	}
 	bet_, err := h.service.PlaceBet(bet)
@@ -76,7 +76,7 @@ func (h *handler) AddBet(w http.ResponseWriter, r *http.Request) {
 	writeResponse(w, http.StatusOK, bet_, nil)
 }
 
-// OrderShow fetches and displays one existing order
+// TotalPrizes calculates the total prize to be given to winers
 func (h *handler) TotalPrizes(w http.ResponseWriter, r *http.Request) {
 	total, err := h.service.PrizePool()
 	// Handle any errors & write an error HTTP status & response
@@ -88,12 +88,12 @@ func (h *handler) TotalPrizes(w http.ResponseWriter, r *http.Request) {
 	writeResponse(w, http.StatusOK, total, nil)
 }
 
-// Close closes the orders app for new orders
+// EndEvent ends an event and processes winnngs
 func (h *handler) EndEvent(w http.ResponseWriter, r *http.Request) {
 	var event models.Event
 	// Read the request body
 	if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
-		writeResponse(w, http.StatusBadRequest, nil, fmt.Errorf("invalid order body:%v", err))
+		writeResponse(w, http.StatusBadRequest, nil, fmt.Errorf("invalid event body:%v", err))
 		return
 	}
 	event_, err := h.service.SetEventResults(event)
@@ -104,12 +104,12 @@ func (h *handler) EndEvent(w http.ResponseWriter, r *http.Request) {
 	writeResponse(w, http.StatusOK, event_, nil)
 }
 
-// Close closes the orders app for new orders
+// CheckWins checks the wins for an event
 func (h *handler) CheckWins(w http.ResponseWriter, r *http.Request) {
 	var event models.Event
 	// Read the request body
 	if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
-		writeResponse(w, http.StatusBadRequest, nil, fmt.Errorf("invalid order body:%v", err))
+		writeResponse(w, http.StatusBadRequest, nil, fmt.Errorf("invalid event body:%v", err))
 		return
 	}
 	winAmount, err := h.service.CheckWinAmount(event)
@@ -120,10 +120,10 @@ func (h *handler) CheckWins(w http.ResponseWriter, r *http.Request) {
 	writeResponse(w, http.StatusOK, winAmount, nil)
 }
 
-// Close closes the orders app for new orders
+// CloseApp closes the betting app for new bets
 func (h *handler) CloseApp(w http.ResponseWriter, r *http.Request) {
 	h.invokeClose()
-	writeResponse(w, http.StatusOK, "The Orders App is now closed!", nil)
+	writeResponse(w, http.StatusOK, "The betting App is now closed!", nil)
 }
 
 func (h *handler) invokeClose() {
