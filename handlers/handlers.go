@@ -78,7 +78,15 @@ func (h *handler) AddBet(w http.ResponseWriter, r *http.Request) {
 
 // TotalPrizes calculates the total prize to be given to winers
 func (h *handler) TotalPrizes(w http.ResponseWriter, r *http.Request) {
-	total, err := h.service.PrizePool()
+
+	var event models.Event
+	// Read the request body
+	if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
+		writeResponse(w, http.StatusBadRequest, nil, fmt.Errorf("invalid event body:%v", err))
+		return
+	}
+
+	total, err := h.service.PrizePool(event)
 	// Handle any errors & write an error HTTP status & response
 	if err != nil {
 		writeResponse(w, http.StatusNotFound, nil, err)
@@ -112,12 +120,12 @@ func (h *handler) CheckWins(w http.ResponseWriter, r *http.Request) {
 		writeResponse(w, http.StatusBadRequest, nil, fmt.Errorf("invalid event body:%v", err))
 		return
 	}
-	winAmount, err := h.service.CheckWinAmount(event)
+	wins, err := h.service.CheckWins(event)
 	if err != nil {
 		writeResponse(w, http.StatusInternalServerError, nil, err)
 		return
 	}
-	writeResponse(w, http.StatusOK, winAmount, nil)
+	writeResponse(w, http.StatusOK, wins, nil)
 }
 
 // CloseApp closes the betting app for new bets

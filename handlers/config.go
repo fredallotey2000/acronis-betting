@@ -15,7 +15,7 @@ func ConfigureHandler(handler Handler) *mux.Router {
 		Handler(http.HandlerFunc(handler.AddEvent))
 	router.Methods("POST").Path("/bets").
 		Handler(http.HandlerFunc(handler.AddBet))
-	router.Methods("GET").Path("/totalprizes").
+	router.Methods("POST").Path("/totalprizes").
 		Handler(http.HandlerFunc(handler.TotalPrizes))
 	router.Methods("POST").Path("/endevent").Handler(http.HandlerFunc(handler.EndEvent))
 	router.Methods("POST").Path("/checkwins").Handler(http.HandlerFunc(handler.CheckWins))

@@ -19,9 +19,9 @@ type service struct {
 type IService interface {
 	NewEvent(event models.Event) (*models.Event, error)
 	PlaceBet(bet models.Bet) (*models.Bet, error)
-	PrizePool() (float64, error)
+	PrizePool(event models.Event) (float64, error)
 	SetEventResults(event models.Event) (*models.Event, error)
-	CheckWinAmount(event models.Event) (float64, error)
+	CheckWins(event models.Event) ([]models.Bet, error)
 	Close()
 }
 
@@ -65,14 +65,13 @@ func (r *service) PlaceBet(incomingBet models.Bet) (*models.Bet, error) {
 }
 
 // PrizePool Compute total prices won
-func (r *service) PrizePool() (float64, error) {
+func (r *service) PrizePool(event models.Event) (float64, error) {
 	pricePool := 0.00
 	for _, bet := range r.bets.FindAll() {
 		//fmt.Println(bet.EventId, "  ", bet.Status, " ", models.BetStatus_Won)
-		if bet.Status == models.BetStatus_Won {
-
+		if bet.EventId == event.Id && bet.Status == models.BetStatus_Won {
 			event, err := r.events.Find(bet.EventId)
-			fmt.Println(event.Name)
+			//fmt.Println(event.Name)
 			if err != nil {
 				return 0.0, err
 			}
@@ -110,15 +109,15 @@ func (r *service) processWins(event models.Event) {
 	}
 }
 
-// CheckWinAmount checkts the win amount for an event
-func (r *service) CheckWinAmount(event models.Event) (float64, error) {
-	totalWinAmount := 0.00
+// CheckWinAmount checkts all bets that won
+func (r *service) CheckWins(event models.Event) ([]models.Bet, error) {
+	wins := make([]models.Bet, 0)
 	for _, bet := range r.bets.FindAll() {
 		if bet.EventId == event.Id && bet.Status == models.BetStatus_Won {
-			totalWinAmount += event.WinAmount
+			wins = append(wins, bet)
 		}
 	}
-	return totalWinAmount, nil
+	return wins, nil
 }
 
 // Close closes the betting app for incoming bets
